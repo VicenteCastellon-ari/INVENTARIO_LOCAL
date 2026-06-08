@@ -5,8 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Inventario POS</title>
   <link rel="manifest" href="/static/manifest.json">
-  <meta name="theme-color" content="#0f172a">
+  <meta name="theme-color" content="#001f54">
   <link rel="apple-touch-icon" href="/static/icon-192.png">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/static/css/style.css">
 </head>
 <body>
@@ -20,69 +21,97 @@
     </div>
 
     <div id="panel_pos" class="panel active">
-      <div class="modos">
-        <button class="btn-modo activo" id="btn_venta" onclick="cambiarModoPOS('venta')">Vender</button>
-        <button class="btn-modo" id="btn_ingreso" onclick="cambiarModoPOS('ingreso')">Ingresar</button>
+      
+      <div class="action-bar">
+        <h2 class="page-title">Punto de Venta</h2>
+        <div class="action-buttons">
+          <button class="btn-action activo" id="btn_venta" onclick="cambiarModoPOS('venta')">🛒 Vender (F2)</button>
+          <button class="btn-action" id="btn_ingreso" onclick="cambiarModoPOS('ingreso')">➕ Ingresar (F4)</button>
+        </div>
       </div>
       
       <input type="text" id="codigo_input" autofocus autocomplete="off">
       <div id="ultimo_escaneo" class="ultimo-escaneo">Sistema Iniciado</div>
       
-      <div id="carrito_container">
+      <div id="carrito_container" class="card-block">
         <div class="table-responsive">
           <table class="data-table">
             <thead>
               <tr>
                 <th>Producto</th>
-                <th>Cant</th>
-                <th>Subtotal</th>
+                <th style="text-align: center;">Cant</th>
+                <th style="text-align: right;">Subtotal</th>
               </tr>
             </thead>
             <tbody id="tabla_carrito"></tbody>
           </table>
         </div>
+        
         <div class="total-bar">
-          Total: $<span id="total_carrito">0.00</span><br>
-          <small style="color: #64748b; font-size: 16px;">Bs. <span id="total_bs">0.00</span></small>
+          <span style="font-size: 16px; color: var(--text-muted); font-weight: 600;">Total a pagar</span><br>
+          $<span id="total_carrito">0.00</span><br>
+          <small class="text-bs">Bs. <span id="total_bs">0.00</span></small>
         </div>
-        <div style="text-align: right; margin-bottom: 15px; font-size: 13px; color: var(--primary); font-weight: bold;">
+        
+        <div class="tasa-info">
           Tasa BCV: Bs. <span id="tasa_bcv_display">Cargando...</span>
         </div>
-        <button class="btn-submit" onclick="procesarCarrito()">Confirmar Venta</button>
-        <button class="btn-delete" onclick="limpiarCarrito()">Cancelar Operación</button>
+        
+        <div style="display: flex; gap: 10px; margin-top: 20px;">
+          <button class="btn-delete" onclick="limpiarCarrito()" style="flex: 1;">Cancelar</button>
+          <button class="btn-submit" onclick="procesarCarrito()" style="flex: 2;">Confirmar Venta</button>
+        </div>
       </div>
 
-      <div id="form_registro_auto" class="form-block" style="display:none;">
-        <h4 style="margin-top:0;">Nuevo Producto Escaneado</h4>
+      <div id="form_registro_auto" class="card-block" style="display:none; margin-top: 20px;">
+        <h3 class="card-title" style="color: var(--danger-red);">⚠️ Nuevo Producto Escaneado</h3>
         <input type="hidden" id="auto_codigo">
-        <input type="text" id="auto_categoria" placeholder="Categoría">
+        <input type="text" id="auto_categoria" placeholder="Categoría (Ej. Bebidas)">
         <input type="text" id="auto_nombre" placeholder="Nombre del artículo">
-        <input type="number" id="auto_precio" placeholder="Precio ($)" step="0.01" min="0">
-        <button class="btn-submit" onclick="guardarProductoAuto()">Registrar y Añadir</button>
+        <input type="number" id="auto_precio" placeholder="Precio de Venta ($)" step="0.01" min="0">
+        <button class="btn-submit" onclick="guardarProductoAuto()" style="background-color: var(--primary-blue);">Registrar y Añadir</button>
       </div>
     </div>
 
     <div id="panel_inventario" class="panel">
-      <details class="form-block">
-        <summary style="font-weight:bold; cursor:pointer; color:var(--primary);">+ Agregar Manualmente</summary>
-        <div style="margin-top:15px;">
-          <input type="text" id="man_codigo" placeholder="Código de barras">
+      
+      <div class="dashboard-header">
+        <div class="metric-card active">
+          <div class="metric-title">Módulo</div>
+          <div class="metric-value">Almacén</div>
+          <div class="metric-sub">Gestión de stock</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-title">Operaciones</div>
+          <div class="metric-value">Activo</div>
+          <div class="metric-sub">Sincronizado a DB</div>
+        </div>
+      </div>
+
+      <details class="card-block" style="margin-bottom: 20px;">
+        <summary class="summary-title">+ Ingresar Producto Manualmente</summary>
+        <div style="margin-top: 20px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+          <input type="text" id="man_codigo" placeholder="Código de barras" style="grid-column: 1 / -1;">
           <input type="text" id="man_categoria" placeholder="Categoría">
           <input type="text" id="man_nombre" placeholder="Nombre">
           <input type="number" id="man_precio" placeholder="Precio ($)" step="0.01" min="0">
           <input type="number" id="man_stock" placeholder="Stock Inicial" value="1" min="0">
-          <button class="btn-submit" onclick="guardarProductoManual()">Añadir al Almacén</button>
+          <button class="btn-submit" onclick="guardarProductoManual()" style="grid-column: 1 / -1;">Añadir al Almacén</button>
         </div>
       </details>
-      <input type="text" id="buscador_inv" placeholder="🔍 Buscar producto o código..." style="margin-bottom: 15px;">
-      <div class="table-responsive">
+      
+      <div class="search-bar-container">
+        <input type="text" id="buscador_inv" class="search-input" placeholder="🔍 Buscar producto por nombre o código...">
+      </div>
+      
+      <div class="card-block table-responsive" style="padding: 0;">
         <table class="data-table">
           <thead>
             <tr>
-              <th>Cat</th>
-              <th>Nombre</th>
-              <th>Stock</th>
-              <th>Acción</th>
+              <th>Categoría</th>
+              <th>Descripción</th>
+              <th style="text-align: center;">Stock</th>
+              <th style="text-align: center;">Acción</th>
             </tr>
           </thead>
           <tbody id="tabla_productos_corps"></tbody>
