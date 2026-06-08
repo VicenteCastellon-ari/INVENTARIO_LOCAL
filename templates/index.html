@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Inventario POS</title>
+  <link rel="manifest" href="/static/manifest.json">
+  <meta name="theme-color" content="#0f172a">
+  <link rel="apple-touch-icon" href="/static/icon-192.png">
+  <link rel="stylesheet" href="/static/css/style.css?v=6">
+</head>
+<body>
+  <div id="status_bar" class="status-bar activo">Lector Activo: Listo para escanear</div>
+  
+  <div class="container">
+    <div class="tabs">
+      <button class="tab-btn active" onclick="cambiarPestaña('pos')">Ventas</button>
+      <button class="tab-btn" onclick="cambiarPestaña('inventario')">Almacén</button>
+    </div>
+
+    <div id="panel_pos" class="panel active">
+      <div class="modos">
+        <button class="btn-modo activo" id="btn_venta" onclick="cambiarModoPOS('venta')">Vender</button>
+        <button class="btn-modo" id="btn_ingreso" onclick="cambiarModoPOS('ingreso')">Ingresar</button>
+      </div>
+      
+      <input type="text" id="codigo_input" autofocus autocomplete="off">
+      <div id="ultimo_escaneo" class="ultimo-escaneo">Sistema Iniciado</div>
+      
+      <div id="carrito_container">
+        <div class="table-responsive">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Producto</th>
+                <th>Cant</th>
+                <th>Subtotal</th>
+              </tr>
+            </thead>
+            <tbody id="tabla_carrito"></tbody>
+          </table>
+        </div>
+        <div class="total-bar">Total: $<span id="total_carrito">0.00</span></div>
+        <button class="btn-submit" onclick="procesarCarrito()">Confirmar Venta</button>
+        <button class="btn-delete" onclick="limpiarCarrito()">Cancelar Operación</button>
+      </div>
+
+      <div id="form_registro_auto" class="form-block" style="display:none;">
+        <h4 style="margin-top:0;">Nuevo Producto Escaneado</h4>
+        <input type="hidden" id="auto_codigo">
+        <input type="text" id="auto_categoria" placeholder="Categoría">
+        <input type="text" id="auto_nombre" placeholder="Nombre del artículo">
+        <input type="number" id="auto_precio" placeholder="Precio" step="0.01" min="0">
+        <button class="btn-submit" onclick="guardarProductoAuto()">Registrar y Añadir</button>
+      </div>
+    </div>
+
+    <div id="panel_inventario" class="panel">
+      <details class="form-block">
+        <summary style="font-weight:bold; cursor:pointer; color:var(--primary);">+ Agregar Manualmente</summary>
+        <div style="margin-top:15px;">
+          <input type="text" id="man_codigo" placeholder="Código de barras">
+          <input type="text" id="man_categoria" placeholder="Categoría">
+          <input type="text" id="man_nombre" placeholder="Nombre">
+          <input type="number" id="man_precio" placeholder="Precio" step="0.01" min="0">
+          <input type="number" id="man_stock" placeholder="Stock Inicial" value="1" min="0">
+          <button class="btn-submit" onclick="guardarProductoManual()">Añadir al Almacén</button>
+        </div>
+      </details>
+      <div class="table-responsive">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Cat</th>
+              <th>Nombre</th>
+              <th>Stock</th>
+              <th>Acción</th>
+            </tr>
+          </thead>
+          <tbody id="tabla_productos_corps"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  
+  <script src="/static/js/main.js"></script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/static/sw.js');
+    }
+  </script>
+</body>
+</html>
