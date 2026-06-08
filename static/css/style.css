@@ -13,9 +13,6 @@ html, body {
   min-height: 100vh;
   margin: 0;
   padding: 0;
-}
-
-body {
   font-family: system-ui, -apple-system, sans-serif;
   background-color: var(--bg);
   color: var(--text);
@@ -121,8 +118,8 @@ body {
   color: white;
 }
 
-input[type="text"], 
-input[type="password"], 
+input[type="text"],
+input[type="password"],
 input[type="number"] {
   width: 100%;
   padding: 16px;
@@ -162,10 +159,10 @@ input:focus {
   margin-bottom: 20px;
 }
 
-.btn-submit {
+.btn-submit,
+.btn-delete {
   width: 100%;
   padding: 16px;
-  background: var(--success);
   color: white;
   border: none;
   border-radius: 8px;
@@ -175,17 +172,14 @@ input:focus {
   cursor: pointer;
 }
 
+.btn-submit {
+  background: var(--success);
+}
+
 .btn-delete {
-  width: 100%;
-  padding: 12px;
   background: var(--danger);
-  color: white;
-  border: none;
-  border-radius: 8px;
+  padding: 12px;
   font-size: 14px;
-  font-weight: 600;
-  margin-top: 10px;
-  cursor: pointer;
 }
 
 .table-responsive {
@@ -201,7 +195,7 @@ input:focus {
   min-width: 400px;
 }
 
-.data-table th, 
+.data-table th,
 .data-table td {
   padding: 12px;
   text-align: left;
@@ -218,7 +212,7 @@ input:focus {
   font-size: 24px;
   font-weight: 800;
   text-align: right;
-  margin: 20px 0;
+  margin: 10px 0;
 }
 
 .btn-qty {
@@ -249,12 +243,120 @@ input:focus {
   font-size: 13px;
 }
 
+#toast-container {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.toast {
+  padding: 12px 20px;
+  border-radius: 8px;
+  color: white;
+  font-weight: 600;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  animation: slideIn 0.3s ease, fadeOut 0.3s ease 2.7s forwards;
+}
+
+.toast.success {
+  background-color: var(--success);
+}
+
+.toast.error {
+  background-color: var(--danger);
+}
+
+.toast.warning {
+  background-color: #f59e0b;
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes fadeOut {
+  to {
+    opacity: 0;
+  }
+}
+
+.print-only {
+  display: none;
+}
+
+@media print {
+  .screen-only,
+  .status-bar,
+  #toast-container {
+    display: none !important;
+  }
+  
+  body {
+    background: white;
+    color: black;
+    margin: 0;
+    padding: 0;
+    font-family: monospace;
+    font-size: 12px;
+  }
+  
+  .print-only {
+    display: block;
+    width: 100%;
+    max-width: 300px;
+    margin: 0 auto;
+  }
+  
+  .ticket-header {
+    text-align: center;
+    margin-bottom: 10px;
+  }
+  
+  .ticket-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 10px;
+  }
+  
+  .ticket-table th,
+  .ticket-table td {
+    border-bottom: 1px dashed #ccc;
+    padding: 4px 0;
+    text-align: left;
+  }
+  
+  .ticket-table td:last-child,
+  .ticket-table th:last-child {
+    text-align: right;
+  }
+  
+  .ticket-total {
+    text-align: right;
+    font-weight: bold;
+    font-size: 14px;
+    margin-top: 10px;
+    border-top: 1px dashed #ccc;
+    padding-top: 10px;
+  }
+}
+
 @media (min-width: 768px) {
   .container {
     padding: 30px;
     padding-bottom: 30px;
   }
-
+  
   .tabs {
     position: relative;
     bottom: auto;
@@ -263,11 +365,11 @@ input:focus {
     border-bottom: 2px solid var(--border);
     margin-bottom: 20px;
   }
-
+  
   .tab-btn {
     border-radius: 8px 8px 0 0;
   }
-
+  
   .tab-btn.active {
     background: var(--card);
     border: 2px solid var(--border);
@@ -275,7 +377,7 @@ input:focus {
     margin-bottom: -2px;
     border-top: 4px solid var(--primary);
   }
-
+  
   .form-block {
     margin-top: 0;
   }

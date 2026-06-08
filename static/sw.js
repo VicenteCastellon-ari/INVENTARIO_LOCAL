@@ -1,36 +1,34 @@
-const CACHE_NAME = 'inventario-v1'; // Cambia este número (v2, v3) cuando hagas actualizaciones grandes
+const CACHE_NAME = 'inventario-v2';
+const urlsToCache = [
+  '/', 
+  '/static/manifest.json', 
+  '/static/css/style.css', 
+  '/static/js/main.js'
+];
 
-self.addEventListener('install', (e) => {
-  self.skipWaiting(); // Fuerza al navegador a usar el nuevo Service Worker inmediatamente
+self.addEventListener('install', e => {
+  self.skipWaiting();
   e.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => {
-      return cache.addAll([
-        '/', 
-        '/static/manifest.json', 
-        '/static/css/style.css', 
-        '/static/js/main.js'
-      ]);
+    caches.open(CACHE_NAME).then(cache => {
+      return cache.addAll(urlsToCache);
     })
   );
 });
 
-// Estrategia: Red primero. Si no hay internet, usa el caché.
-self.addEventListener('fetch', (e) => {
-  if (e.request.method !== 'GET') return; // Solo cacheamos peticiones GET, no los POST de ventas
-
+self.addEventListener('fetch', e => {
+  if (e.request.method !== 'GET' || e.request.url.includes('/obtener_productos') || e.request.url.includes('api.vercel.app')) {
+    return;
+  }
+  
   e.respondWith(
-    fetch(e.request)
-      .then((response) => {
-        // Si hay red y la respuesta es válida, actualizamos el caché en segundo plano
-        const resClone = response.clone();
-        caches.open(CACHE_NAME).then((cache) => {
-          cache.put(e.request, resClone);
+    caches.match(e.request).then(cachedResponse => {
+      const fetchPromise = fetch(e.request).then(networkResponse => {
+        caches.open(CACHE_NAME).then(cache => {
+          cache.put(e.request, networkResponse.clone());
         });
-        return response;
-      })
-      .catch(() => {
-        // Si falla la red (sin internet), buscamos en el caché
-        return caches.match(e.request);
-      })
+        return networkResponse;
+      });
+      return cachedResponse || fetchPromise;
+    })
   );
 });
