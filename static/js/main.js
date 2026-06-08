@@ -47,10 +47,13 @@ function realizarPeticion(url, opciones) {
 
 async function cargarTasaBCV() {
   try {
-    const res = await fetch('https://pydolarvenezuela-api.vercel.app/api/v1/dollar/page?page=bcv');
+    const res = await fetch('https://ve.dolarapi.com/v1/dolares/oficial');
     const data = await res.json();
-    tasaBCV = data.monitors.usd.price;
+    
+    tasaBCV = data.promedio;
     document.getElementById('tasa_bcv_display').textContent = tasaBCV.toFixed(2);
+    
+    renderizarCarrito();
   } catch (e) {
     document.getElementById('tasa_bcv_display').textContent = 'Error API';
   }
