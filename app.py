@@ -117,11 +117,29 @@ def guardar_producto():
     conn = obtener_conexion()
     try:
         cursor = conn.cursor()
-        cursor.execute('INSERT INTO Productos (codigo_barras, nombre, categoria, precio_venta, stock_actual) VALUES (%s, %s, %s, %s, %s)', (datos['codigo'], datos['nombre'], datos['categoria'], float(datos['precio']), int(datos.get('stock_inicial', 1))))
-        cursor.execute('INSERT INTO Movimientos (codigo_producto, tipo, cantidad) VALUES (%s, %s, %s)', (datos['codigo'], 'INGRESO_INICIAL', int(datos.get('stock_inicial', 1))))
+        # Si el usuario deja el stock vacío, asumimos 0 para no causar errores
+        stock_inicial = int(datos.get('stock_inicial') or 0)
+        
+        # ON CONFLICT DO UPDATE: Si el código ya existe, actualiza el precio y suma el stock
+        cursor.execute('''
+            INSERT INTO Productos (codigo_barras, nombre, categoria, precio_venta, stock_actual) 
+            VALUES (%s, %s, %s, %s, %s)
+            ON CONFLICT (codigo_barras) DO UPDATE 
+            SET nombre = EXCLUDED.nombre,
+                categoria = EXCLUDED.categoria,
+                precio_venta = EXCLUDED.precio_venta,
+                stock_actual = Productos.stock_actual + EXCLUDED.stock_actual
+        ''', (datos['codigo'], datos['nombre'], datos['categoria'], float(datos['precio']), stock_inicial))
+        
+        # Solo registramos movimiento si realmente se sumó stock
+        if stock_inicial > 0:
+            cursor.execute('INSERT INTO Movimientos (codigo_producto, tipo, cantidad) VALUES (%s, %s, %s)', 
+                           (datos['codigo'], 'INGRESO_MANUAL', stock_inicial))
+            
         conn.commit()
         return jsonify({'status': 'exito'})
-    except Exception:
+    except Exception as e:
+        logging.error(f"Error guardando/actualizando producto: {e}")
         return jsonify({'status': 'error'})
     finally:
         conn.close()
