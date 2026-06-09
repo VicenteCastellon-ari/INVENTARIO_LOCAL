@@ -21,7 +21,6 @@
     </div>
 
     <div id="panel_pos" class="panel active">
-      
       <div class="action-bar">
         <h2 class="page-title">Punto de Venta</h2>
         <div class="action-buttons">
@@ -74,7 +73,6 @@
     </div>
 
     <div id="panel_inventario" class="panel">
-      
       <div class="dashboard-header">
         <div class="metric-card active">
           <div class="metric-title">Módulo</div>
@@ -85,6 +83,19 @@
           <div class="metric-title">Operaciones</div>
           <div class="metric-value">Activo</div>
           <div class="metric-sub">Sincronizado a DB</div>
+        </div>
+      </div>
+
+      <div class="card-block" style="margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">
+        <div>
+          <h3 class="card-title" style="margin-bottom: 5px;">Carga Masiva (Excel)</h3>
+          <p style="font-size: 13px; color: var(--text-muted); margin: 0;">Sube un archivo .xlsx para importar o actualizar productos.</p>
+        </div>
+        <div>
+          <input type="file" id="archivo_excel" accept=".xlsx" style="display: none;" onchange="subirExcelMasivo()">
+          <button class="btn-action" style="background-color: var(--success-green); color: white; border: none; padding: 12px 20px; box-shadow: 0 4px 6px rgba(16, 185, 129, 0.2);" onclick="document.getElementById('archivo_excel').click()">
+            📁 Importar Excel .xlsx
+          </button>
         </div>
       </div>
 
@@ -100,8 +111,11 @@
         </div>
       </details>
       
-      <div class="search-bar-container">
-        <input type="text" id="buscador_inv" class="search-input" placeholder="🔍 Buscar producto por nombre o código...">
+      <div class="search-bar-container" style="display: flex; gap: 10px; margin-bottom: 15px;">
+        <input type="text" id="buscador_inv" class="search-input" placeholder="🔍 Buscar producto por nombre o código..." style="flex: 2;">
+        <select id="filtro_categoria" class="search-input" style="flex: 1; cursor: pointer;">
+          <option value="todas">Todas las categorías</option>
+        </select>
       </div>
       
       <div class="card-block table-responsive" style="padding: 0;">

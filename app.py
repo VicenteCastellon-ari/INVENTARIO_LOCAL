@@ -3,6 +3,7 @@ import psycopg2
 from psycopg2.extras import RealDictCursor
 import os
 import logging
+import openpyxl
 
 app = Flask(__name__)
 logging.basicConfig(level=logging.ERROR)
@@ -105,7 +106,7 @@ def obtener_productos():
     conn = obtener_conexion()
     try:
         cursor = conn.cursor(cursor_factory=RealDictCursor)
-        cursor.execute('SELECT * FROM Productos ORDER BY categoria ASC, nombre ASC LIMIT 200')
+        cursor.execute('SELECT * FROM Productos ORDER BY categoria ASC, nombre ASC')
         return jsonify([dict(row) for row in cursor.fetchall()])
     finally:
         conn.close()
@@ -134,6 +135,47 @@ def eliminar_producto():
         cursor.execute('DELETE FROM Productos WHERE codigo_barras = %s', (codigo,))
         conn.commit()
         return jsonify({'status': 'exito'})
+    finally:
+        conn.close()
+
+@app.route('/importar_excel', methods=['POST'])
+def importar_excel():
+    if 'archivo' not in request.files:
+        return jsonify({'status': 'error', 'message': 'No se envió ningún archivo'})
+    file = request.files['archivo']
+    if file.filename == '':
+        return jsonify({'status': 'error', 'message': 'Archivo vacío'})
+    try:
+        wb = openpyxl.load_workbook(file)
+        sheet = wb.active
+        conn = obtener_conexion()
+        cursor = conn.cursor()
+        filas_procesadas = 0
+        for row in sheet.iter_rows(min_row=2, values_only=True):
+            codigo = str(row[0]).strip() if row[0] else None
+            nombre = str(row[1]).strip() if row[1] else None
+            categoria = str(row[2]).strip() if row[2] else 'General'
+            precio = float(row[3]) if row[3] else 0.0
+            stock = int(row[4]) if row[4] else 0
+            if not codigo or not nombre:
+                continue
+            cursor.execute('''
+                INSERT INTO Productos (codigo_barras, nombre, categoria, precio_venta, stock_actual)
+                VALUES (%s, %s, %s, %s, %s)
+                ON CONFLICT (codigo_barras) DO UPDATE 
+                SET nombre = EXCLUDED.nombre,
+                    categoria = EXCLUDED.categoria,
+                    precio_venta = EXCLUDED.precio_venta,
+                    stock_actual = Productos.stock_actual + EXCLUDED.stock_actual
+            ''', (codigo, nombre, categoria, precio, stock))
+            if stock > 0:
+                cursor.execute('INSERT INTO Movimientos (codigo_producto, tipo, cantidad) VALUES (%s, %s, %s)', (codigo, 'INGRESO_MASIVO', stock))
+            filas_procesadas += 1
+        conn.commit()
+        return jsonify({'status': 'exito', 'filas': filas_procesadas})
+    except Exception as e:
+        logging.error(f"Error Excel: {e}")
+        return jsonify({'status': 'error', 'message': 'Asegúrate de subir el archivo .xlsx correcto.'})
     finally:
         conn.close()
 

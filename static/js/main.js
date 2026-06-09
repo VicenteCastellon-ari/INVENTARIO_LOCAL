@@ -49,10 +49,8 @@ async function cargarTasaBCV() {
   try {
     const res = await fetch('https://ve.dolarapi.com/v1/dolares/oficial');
     const data = await res.json();
-    
     tasaBCV = data.promedio;
     document.getElementById('tasa_bcv_display').textContent = tasaBCV.toFixed(2);
-    
     renderizarCarrito();
   } catch (e) {
     document.getElementById('tasa_bcv_display').textContent = 'Error API';
@@ -81,14 +79,11 @@ cargarTasaBCV();
 
 window.cambiarPestaña = function(pestaña) {
   pestañaActual = pestaña;
-  
   document.querySelectorAll('.tab-btn').forEach((btn, i) => {
     btn.classList.toggle('active', i === (pestaña === 'pos' ? 0 : 1));
   });
-  
   document.getElementById('panel_pos').classList.toggle('active', pestaña === 'pos');
   document.getElementById('panel_inventario').classList.toggle('active', pestaña === 'inventario');
-  
   if (pestaña === 'inventario') {
     cargarTablaInventario();
     statusBar.style.display = 'none';
@@ -112,24 +107,10 @@ document.addEventListener('keydown', (e) => {
   if (pestañaActual !== 'pos' || (e.target.tagName === 'INPUT' && e.target.id !== 'codigo_input')) {
     return;
   }
-  
-  if (e.key === 'F2') { 
-    e.preventDefault(); 
-    cambiarModoPOS('venta'); 
-  }
-  if (e.key === 'F4') { 
-    e.preventDefault(); 
-    cambiarModoPOS('ingreso'); 
-  }
-  if (e.key === 'F8' || e.code === 'Space') { 
-    e.preventDefault(); 
-    procesarCarrito(); 
-  }
-  if (e.key === 'Escape') { 
-    e.preventDefault(); 
-    limpiarCarrito(); 
-    formAuto.style.display = 'none'; 
-  }
+  if (e.key === 'F2') { e.preventDefault(); cambiarModoPOS('venta'); }
+  if (e.key === 'F4') { e.preventDefault(); cambiarModoPOS('ingreso'); }
+  if (e.key === 'F8' || e.code === 'Space') { e.preventDefault(); procesarCarrito(); }
+  if (e.key === 'Escape') { e.preventDefault(); limpiarCarrito(); formAuto.style.display = 'none'; }
 });
 
 inputCodigo.addEventListener('keypress', function(e) {
@@ -156,7 +137,7 @@ function procesarEscaneo(codigo) {
       document.getElementById('auto_codigo').value = data.codigo;
       formAuto.style.display = 'block';
       ultimoEscaneo.textContent = 'Producto Desconocido';
-      ultimoEscaneo.style.color = '#e67e22';
+      ultimoEscaneo.style.color = '#ef4444';
       document.getElementById('auto_categoria').focus();
     } else {
       if (modoPOS === 'venta') {
@@ -177,7 +158,7 @@ function registrarIngresoInmediato(codigo) {
     if (data.status === 'ok') {
       beep(600, 100);
       ultimoEscaneo.textContent = `+1 ${data.nombre} (Stock: ${data.stock})`;
-      ultimoEscaneo.style.color = '#16a34a';
+      ultimoEscaneo.style.color = '#10b981';
     }
   });
 }
@@ -191,7 +172,7 @@ function agregarAlCarrito(prod) {
   }
   beep(600, 100);
   ultimoEscaneo.textContent = prod.nombre;
-  ultimoEscaneo.style.color = '#2563eb';
+  ultimoEscaneo.style.color = '#0044cc';
   renderizarCarrito();
 }
 
@@ -199,23 +180,21 @@ function renderizarCarrito() {
   const tbody = document.getElementById('tabla_carrito');
   tbody.innerHTML = '';
   let total = 0;
-  
   carrito.forEach((i, idx) => {
     let sub = i.cantidad * i.precio_venta;
     total += sub;
     tbody.innerHTML += `
       <tr>
         <td>${i.nombre}</td>
-        <td>
+        <td style="text-align: center;">
           <button class="btn-qty" onclick="modCarrito(${idx}, -1)">-</button> 
-          <span style="display:inline-block; width:20px; text-align:center;">${i.cantidad}</span> 
+          <span style="display:inline-block; width:25px; text-align:center;">${i.cantidad}</span> 
           <button class="btn-qty" onclick="modCarrito(${idx}, 1)">+</button>
         </td>
-        <td style="font-weight:bold;">$${sub.toFixed(2)}</td>
+        <td style="font-weight:bold; text-align: right;">$${sub.toFixed(2)}</td>
       </tr>
     `;
   });
-  
   document.getElementById('total_carrito').textContent = total.toFixed(2);
   document.getElementById('total_bs').textContent = (total * (tasaBCV || 0)).toFixed(2);
 }
@@ -233,7 +212,7 @@ window.limpiarCarrito = function() {
   carrito = [];
   renderizarCarrito();
   ultimoEscaneo.textContent = 'Operación Cancelada';
-  ultimoEscaneo.style.color = '#dc2626';
+  ultimoEscaneo.style.color = '#ef4444';
   inputCodigo.focus();
 }
 
@@ -246,7 +225,6 @@ function imprimirTicket(carrito, total, totalBs, id) {
       <td>$${(i.cantidad * i.precio_venta).toFixed(2)}</td>
     </tr>
   `).join('');
-  
   ticket.innerHTML = `
     <div class="ticket-header">
       <h3>Inventario POS</h3>
@@ -276,11 +254,9 @@ window.procesarCarrito = function() {
   if (carrito.length === 0) {
     return;
   }
-  
   let carritoActual = [...carrito];
   let totalUsd = parseFloat(document.getElementById('total_carrito').textContent);
   let totalBs = parseFloat(document.getElementById('total_bs').textContent);
-  
   realizarPeticion('/procesar_venta_lote', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -293,7 +269,7 @@ window.procesarCarrito = function() {
       carrito = [];
       renderizarCarrito();
       ultimoEscaneo.textContent = 'Venta Completada';
-      ultimoEscaneo.style.color = '#16a34a';
+      ultimoEscaneo.style.color = '#10b981';
     } else if (data.status === 'error_stock') {
       beep(150, 400);
       showToast(`Stock insuficiente: ${data.producto}`, 'error');
@@ -324,7 +300,6 @@ function guardarProd(tipo) {
     precio: document.getElementById('man_precio').value, 
     stock_inicial: document.getElementById('man_stock').value
   };
-  
   realizarPeticion('/guardar_producto', {
     method: 'POST', 
     headers: { 'Content-Type': 'application/json' }, 
@@ -335,7 +310,7 @@ function guardarProd(tipo) {
       if (tipo === 'auto') {
         formAuto.style.display = 'none';
         ultimoEscaneo.textContent = `Registrado: ${d.nombre}`;
-        ultimoEscaneo.style.color = '#16a34a';
+        ultimoEscaneo.style.color = '#10b981';
         inputCodigo.focus();
       } else {
         cargarTablaInventario();
@@ -350,20 +325,29 @@ function guardarProd(tipo) {
 function cargarTablaInventario() {
   realizarPeticion('/obtener_productos', { method: 'GET' }).then(data => {
     const tbody = document.getElementById('tabla_productos_corps');
+    const selectCategoria = document.getElementById('filtro_categoria');
     tbody.innerHTML = '';
     
+    // Armar las categorías únicas en el selector
+    const categoriasUnicas = [...new Set(data.map(p => p.categoria || 'General'))].sort();
+    selectCategoria.innerHTML = '<option value="todas">Todas las categorías</option>';
+    categoriasUnicas.forEach(cat => {
+      selectCategoria.innerHTML += `<option value="${cat.toLowerCase()}">${cat}</option>`;
+    });
+
     data.forEach(p => {
+      let catData = (p.categoria || 'General').toLowerCase();
       tbody.innerHTML += `
-        <tr class="fila-producto" data-nombre="${p.nombre.toLowerCase()}" data-codigo="${p.codigo_barras}">
+        <tr class="fila-producto" data-nombre="${p.nombre.toLowerCase()}" data-codigo="${p.codigo_barras}" data-categoria="${catData}">
           <td><span class="badge">${p.categoria}</span></td>
           <td>
             <strong>${p.nombre}</strong><br>
             <small>${p.codigo_barras}</small>
           </td>
-          <td style="color:${p.stock_actual <= p.stock_minimo ? 'red' : 'inherit'}">
+          <td style="color:${p.stock_actual <= p.stock_minimo ? 'red' : 'inherit'}; text-align: center;">
             <strong>${p.stock_actual}</strong>
           </td>
-          <td>
+          <td style="text-align: center;">
             <button class="btn-delete-row" onclick="eliminarProducto('${p.codigo_barras}')">Borrar</button>
           </td>
         </tr>
@@ -372,13 +356,18 @@ function cargarTablaInventario() {
   });
 }
 
-document.getElementById('buscador_inv').addEventListener('keyup', function(e) {
-  let text = e.target.value.toLowerCase();
+function aplicarFiltros() {
+  const textoBusqueda = document.getElementById('buscador_inv').value.toLowerCase();
+  const categoriaSeleccionada = document.getElementById('filtro_categoria').value;
   document.querySelectorAll('.fila-producto').forEach(row => {
-    let match = row.dataset.nombre.includes(text) || row.dataset.codigo.includes(text);
-    row.style.display = match ? '' : 'none';
+    const coincideTexto = row.dataset.nombre.includes(textoBusqueda) || row.dataset.codigo.includes(textoBusqueda);
+    const coincideCategoria = categoriaSeleccionada === 'todas' || row.dataset.categoria === categoriaSeleccionada;
+    row.style.display = (coincideTexto && coincideCategoria) ? '' : 'none';
   });
-});
+}
+
+document.getElementById('buscador_inv').addEventListener('keyup', aplicarFiltros);
+document.getElementById('filtro_categoria').addEventListener('change', aplicarFiltros);
 
 window.eliminarProducto = function(codigo) {
   if (confirm('¿Borrar permanente?')) {
@@ -391,4 +380,31 @@ window.eliminarProducto = function(codigo) {
       cargarTablaInventario(); 
     });
   }
+}
+
+window.subirExcelMasivo = function() {
+  const input = document.getElementById('archivo_excel');
+  if (input.files.length === 0) return;
+  const archivo = input.files[0];
+  const formData = new FormData();
+  formData.append('archivo', archivo);
+  showToast('Procesando Excel, por favor espera...', 'warning');
+  fetch('/importar_excel', {
+    method: 'POST',
+    body: formData
+  })
+  .then(res => res.json())
+  .then(data => {
+    if (data.status === 'exito') {
+      showToast(`¡Éxito! Importados/Actualizados ${data.filas} productos.`);
+      cargarTablaInventario();
+    } else {
+      showToast(data.message, 'error');
+    }
+    input.value = '';
+  })
+  .catch(e => {
+    showToast('Error subiendo el archivo', 'error');
+    input.value = '';
+  });
 }

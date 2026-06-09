@@ -1,18 +1,13 @@
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
 
 :root {
-  /* Paleta Moderna - Tonos Azules */
   --primary-deep-blue: #001f54; 
   --primary-blue: #0044cc;      
   --light-blue-bg: #eef2ff;   
   --light-blue-text: #3b82f6;
-  
-  /* Colores Funcionales */
   --success-green: #10b981;
   --danger-red: #ef4444;
   --warning-yellow: #f59e0b;
-  
-  /* Neutros */
   --bg-main: #f1f5f9;
   --card-white: #ffffff;
   --text-dark: #0f172a;
@@ -32,9 +27,6 @@ html, body {
   flex-direction: column;
 }
 
-/* =========================================
-   STATUS BAR & TOASTS
-========================================= */
 .status-bar {
   padding: 12px;
   text-align: center;
@@ -46,7 +38,6 @@ html, body {
   width: 100%;
   box-sizing: border-box;
   font-size: 14px;
-  letter-spacing: 0.5px;
 }
 .status-bar.activo { background-color: var(--success-green); }
 .status-bar.inactivo { background-color: var(--danger-red); }
@@ -76,9 +67,6 @@ html, body {
 @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
 @keyframes fadeOut { to { opacity: 0; } }
 
-/* =========================================
-   LAYOUT PRINCIPAL
-========================================= */
 .container {
   max-width: 1000px;
   margin: 0 auto;
@@ -101,7 +89,7 @@ html, body {
   background-color: var(--card-white);
   padding: 24px;
   border-radius: 16px;
-  box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -1px rgba(0,0,0,0.03);
+  box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
 }
 
 .card-title {
@@ -110,9 +98,6 @@ html, body {
   color: var(--primary-deep-blue);
 }
 
-/* =========================================
-   ACTION BAR (POS)
-========================================= */
 .action-bar {
   display: flex;
   justify-content: space-between;
@@ -157,12 +142,8 @@ html, body {
   background-color: var(--primary-deep-blue);
   color: white;
   border-color: var(--primary-deep-blue);
-  box-shadow: 0 4px 6px rgba(0, 31, 84, 0.2);
 }
 
-/* =========================================
-   DASHBOARD HEADER (INVENTARIO)
-========================================= */
 .dashboard-header {
   display: flex;
   gap: 20px;
@@ -178,8 +159,6 @@ html, body {
   transition: transform 0.2s ease;
 }
 
-.metric-card:hover { transform: translateY(-3px); }
-
 .metric-card.active {
   background-color: var(--primary-deep-blue);
   color: white;
@@ -191,7 +170,6 @@ html, body {
   color: var(--text-muted);
   margin-bottom: 8px;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
 }
 
 .metric-card.active .metric-title { color: #a3bffa; }
@@ -201,7 +179,6 @@ html, body {
   font-weight: 700;
   color: var(--text-dark);
   margin-bottom: 4px;
-  line-height: 1.2;
 }
 
 .metric-card.active .metric-value { color: white; }
@@ -212,11 +189,9 @@ html, body {
 }
 .metric-card.active .metric-sub { color: #cbd5e1; }
 
-/* =========================================
-   ELEMENTOS DE INTERFAZ
-========================================= */
 input[type="text"],
-input[type="number"] {
+input[type="number"],
+select.search-input {
   width: 100%;
   padding: 14px 16px;
   font-size: 15px;
@@ -226,10 +201,10 @@ input[type="number"] {
   border-radius: 10px;
   box-sizing: border-box;
   background-color: #f8fafc;
-  transition: border-color 0.2s;
+  color: var(--text-dark);
 }
 
-input:focus {
+input:focus, select:focus {
   border-color: var(--primary-blue);
   outline: none;
   background-color: white;
@@ -240,9 +215,6 @@ input:focus {
   position: absolute;
   z-index: -1;
 }
-
-.search-bar-container { margin-bottom: 15px; }
-.search-input { margin: 0 !important; }
 
 .ultimo-escaneo {
   font-size: 24px;
@@ -261,9 +233,6 @@ input:focus {
   padding: 5px 0;
 }
 
-/* =========================================
-   BOTONES
-========================================= */
 .btn-submit,
 .btn-delete {
   width: 100%;
@@ -275,12 +244,10 @@ input:focus {
   font-weight: 600;
   font-family: 'Poppins', sans-serif;
   cursor: pointer;
-  transition: filter 0.2s;
 }
 
 .btn-submit { background-color: var(--success-green); }
 .btn-delete { background-color: var(--text-muted); }
-.btn-submit:hover, .btn-delete:hover { filter: brightness(1.1); }
 
 .btn-qty {
   border: 1px solid var(--border-light);
@@ -304,9 +271,6 @@ input:focus {
   font-weight: 600;
 }
 
-/* =========================================
-   TABLAS Y DATOS
-========================================= */
 .table-responsive {
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
@@ -324,7 +288,6 @@ input:focus {
   font-weight: 600;
   font-size: 13px;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
   padding: 16px 20px;
   border-bottom: 2px solid var(--border-light);
   text-align: left;
@@ -336,9 +299,6 @@ input:focus {
   font-size: 14px;
   vertical-align: middle;
 }
-
-.data-table tbody tr:last-child td { border-bottom: none; }
-.data-table tbody tr:hover { background-color: #f8fafc; }
 
 .data-table td strong {
   color: var(--text-dark);
@@ -355,9 +315,6 @@ input:focus {
   display: inline-block;
 }
 
-/* =========================================
-   TOTALES (POS)
-========================================= */
 .total-bar {
   text-align: right;
   margin: 20px 0 10px 0;
@@ -382,9 +339,6 @@ input:focus {
   font-weight: 600;
 }
 
-/* =========================================
-   NAVEGACIÓN INFERIOR (TABS)
-========================================= */
 .tabs {
   display: flex;
   position: fixed;
@@ -394,7 +348,6 @@ input:focus {
   background-color: var(--card-white);
   box-shadow: 0 -4px 20px rgba(0,0,0,0.05);
   z-index: 40;
-  padding-bottom: env(safe-area-inset-bottom);
 }
 
 .tab-btn {
@@ -407,7 +360,6 @@ input:focus {
   font-family: 'Poppins', sans-serif;
   color: var(--text-muted);
   cursor: pointer;
-  transition: color 0.2s;
 }
 
 .tab-btn.active {
@@ -415,13 +367,11 @@ input:focus {
   border-top: 3px solid var(--primary-blue);
 }
 
-/* =========================================
-   MEDIA QUERIES (ESCRITORIO & IMPRESIÓN)
-========================================= */
 @media (max-width: 600px) {
   .dashboard-header { flex-direction: column; gap: 12px; }
   .action-bar { flex-direction: column; gap: 15px; align-items: stretch; }
   .action-buttons { flex-direction: column; }
+  .search-bar-container { flex-direction: column; }
 }
 
 @media (min-width: 768px) {
@@ -433,7 +383,6 @@ input:focus {
     box-shadow: none;
     border-bottom: 2px solid var(--border-light);
     margin-bottom: 25px;
-    padding-bottom: 0;
   }
   .tab-btn { border-radius: 12px 12px 0 0; }
   .tab-btn.active {
