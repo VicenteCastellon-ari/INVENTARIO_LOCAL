@@ -374,8 +374,15 @@ input:focus, select:focus {
   .search-bar-container { flex-direction: column; }
 }
 
+/* Reemplaza desde @media (min-width: 768px) hasta el final del archivo (sin borrar el de @media print) */
+
 @media (min-width: 768px) {
-  .container { padding: 30px; padding-bottom: 30px; }
+  .container {
+    max-width: 1600px; /* ¡La clave! Permite usar toda la pantalla */
+    padding: 30px;
+  }
+
+  /* Diseño de pestañas para PC */
   .tabs {
     position: relative;
     bottom: auto;
@@ -392,7 +399,45 @@ input:focus, select:focus {
     margin-bottom: -2px;
     border-top: 4px solid var(--primary-blue);
   }
+
+  /* --- MAGIA: Diseño a 2 Columnas para Ventas en PC --- */
+  #panel_pos.active {
+    display: grid;
+    grid-template-columns: 350px 1fr; /* Panel izquierdo de 350px, el derecho ocupa el resto */
+    grid-template-rows: auto 1fr;
+    gap: 25px;
+    align-items: start;
+  }
+
+  #panel_pos .action-bar {
+    grid-column: 1 / 3; /* La barra superior ocupa todo el ancho */
+    margin-bottom: 0;
+  }
+
+  #ultimo_escaneo {
+    grid-column: 1 / 2; /* Se coloca en la columna izquierda */
+    background-color: var(--card-white);
+    border-radius: 16px;
+    padding: 40px 20px;
+    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 150px;
+    margin: 0;
+  }
+
+  #form_registro_auto {
+    grid-column: 1 / 2; /* Debajo del cuadro de escaneo */
+  }
+
+  #carrito_container {
+    grid-column: 2 / 3; /* Se coloca en la gran columna derecha */
+    grid-row: 2 / 4; /* Se estira hacia abajo */
+    margin-top: 0;
+  }
 }
+
 
 .print-only { display: none; }
 @media print {
