@@ -68,7 +68,6 @@ html, body {
 @keyframes fadeOut { to { opacity: 0; } }
 
 .container {
-  max-width: 1000px;
   margin: 0 auto;
   padding: 20px 15px 90px 15px;
   flex: 1;
@@ -271,6 +270,30 @@ input:focus, select:focus {
   font-weight: 600;
 }
 
+/* Modales */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.6);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-box {
+  background: white;
+  padding: 30px;
+  border-radius: 20px;
+  width: 90%;
+  max-width: 400px;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
 .table-responsive {
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
@@ -352,10 +375,10 @@ input:focus, select:focus {
 
 .tab-btn {
   flex: 1;
-  padding: 18px;
+  padding: 18px 5px;
   border: none;
   background: transparent;
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 600;
   font-family: 'Poppins', sans-serif;
   color: var(--text-muted);
@@ -374,15 +397,8 @@ input:focus, select:focus {
   .search-bar-container { flex-direction: column; }
 }
 
-/* Reemplaza desde @media (min-width: 768px) hasta el final del archivo (sin borrar el de @media print) */
-
 @media (min-width: 768px) {
-  .container {
-    max-width: 1600px; /* ¡La clave! Permite usar toda la pantalla */
-    padding: 30px;
-  }
-
-  /* Diseño de pestañas para PC */
+  .container { max-width: 1600px; padding: 30px; padding-bottom: 30px; }
   .tabs {
     position: relative;
     bottom: auto;
@@ -400,22 +416,17 @@ input:focus, select:focus {
     border-top: 4px solid var(--primary-blue);
   }
 
-  /* --- MAGIA: Diseño a 2 Columnas para Ventas en PC --- */
+  /* Grid expansivo de 2 columnas para el POS */
   #panel_pos.active {
     display: grid;
-    grid-template-columns: 350px 1fr; /* Panel izquierdo de 350px, el derecho ocupa el resto */
+    grid-template-columns: 350px 1fr;
     grid-template-rows: auto 1fr;
     gap: 25px;
     align-items: start;
   }
-
-  #panel_pos .action-bar {
-    grid-column: 1 / 3; /* La barra superior ocupa todo el ancho */
-    margin-bottom: 0;
-  }
-
+  #panel_pos .action-bar { grid-column: 1 / 3; margin-bottom: 0; }
   #ultimo_escaneo {
-    grid-column: 1 / 2; /* Se coloca en la columna izquierda */
+    grid-column: 1 / 2;
     background-color: var(--card-white);
     border-radius: 16px;
     padding: 40px 20px;
@@ -426,22 +437,13 @@ input:focus, select:focus {
     height: 150px;
     margin: 0;
   }
-
-  #form_registro_auto {
-    grid-column: 1 / 2; /* Debajo del cuadro de escaneo */
-  }
-
-  #carrito_container {
-    grid-column: 2 / 3; /* Se coloca en la gran columna derecha */
-    grid-row: 2 / 4; /* Se estira hacia abajo */
-    margin-top: 0;
-  }
+  #form_registro_auto { grid-column: 1 / 2; }
+  #carrito_container { grid-column: 2 / 3; grid-row: 2 / 4; margin-top: 0; }
 }
-
 
 .print-only { display: none; }
 @media print {
-  .screen-only, .status-bar, #toast-container { display: none !important; }
+  .screen-only, .status-bar, #toast-container, .modal-overlay { display: none !important; }
   body { background: white; color: black; margin: 0; padding: 0; font-family: monospace; font-size: 12px; }
   .print-only { display: block; width: 100%; max-width: 300px; margin: 0 auto; }
   .ticket-header { text-align: center; margin-bottom: 10px; }
